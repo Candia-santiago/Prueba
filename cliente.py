@@ -1,19 +1,26 @@
 import socket
 
+# Configuración básica del cliente
 host = "localhost"
-port= 12345
+port = 12345
 
-clienteSocket = socket.socket (socket.AF_INET, socket.SOCK_STREAM)
-clienteSocket.connect((host, port))
-print ("cliente conectado al server...")
+# Crear el socket del cliente
+clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+clientSocket.connect((host, port))
 
-colorCliente = input ("Seleccione un color para jugar [1- Rojo 2-Verde, 3- Azul]: ")
-clienteSocket.send(colorCliente.encode())
-
-frutaCliente = input ("seleccione una fruta para jugar [1-Manzana 2-frutilla 3-Pera]: ")
-clienteSocket.send(frutaCliente.encode())
-
-marcaCliente = input("seleccione una marca para jugar [1-Nike 2-Adidas 3-Puma]: ")
-clienteSocket.send(marcaCliente.encode())
-
-clienteSocket.close()
+try:
+    while True:
+        # Recibir mensaje del servidor
+        mensaje = clientSocket.recv(1024).decode()
+        if not mensaje:
+            break
+        print(mensaje)  # Mostrar el mensaje recibido
+        
+        # Si el servidor solicita una respuesta, enviarla
+        if "Selecciona" in mensaje or "Adivina" in mensaje:
+            respuesta = input("Tu elección: ")
+            clientSocket.send(respuesta.encode())
+except:
+    print("Conexión finalizada.")
+finally:
+    clientSocket.close()
